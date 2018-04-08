@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6278D653-CF7F-4B7B-80EC-6520D11746D9}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>MyNewService</RootNamespace>
-    <AssemblyName>MyNewService</AssemblyName>
+    <RootNamespace>ImageService</RootNamespace>
+    <AssemblyName>ImageService</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
