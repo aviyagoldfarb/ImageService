@@ -8,6 +8,8 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using ImageService.Logging;
+using ImageService.Logging.Modal;
 
 namespace ImageService
 {
@@ -88,6 +90,11 @@ namespace ImageService
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+
+            // create server and logging model
+            LoggingService logger = new LoggingService();
+            logger.MessageRecieved += OnMsg;
+            
         }
 
         protected override void OnStop()
@@ -106,6 +113,11 @@ namespace ImageService
         protected override void OnContinue()
         {
             eventLog1.WriteEntry("In OnContinue.");
+        }
+
+        private void OnMsg(object sender, MessageRecievedEventArgs type)
+        {
+            eventLog1.WriteEntry(type.Message);
         }
     }
 }
