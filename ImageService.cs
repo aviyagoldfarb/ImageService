@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using ImageService.Logging;
 using ImageService.Logging.Modal;
+using ImageService.Server;
+using ImageService.Controller;
+using ImageService.Modal;
 
 namespace ImageService
 {
@@ -19,6 +22,8 @@ namespace ImageService
 
         private System.ComponentModel.IContainer components;
         private System.Diagnostics.EventLog eventLog1;
+
+        private ImageServer server;
 
         public enum ServiceState
         {
@@ -92,9 +97,14 @@ namespace ImageService
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
 
             // create server and logging model
+            IImageServiceModal imageModal = new ImageServiceModal();
+            IImageController controller = new ImageController(imageModal);
+
             LoggingService logger = new LoggingService();
             logger.MessageRecieved += OnMsg;
-            
+
+            this.server = new ImageServer(controller, logging);
+            this.server.createHandlers();
         }
 
         protected override void OnStop()
@@ -108,6 +118,8 @@ namespace ImageService
             // Update the service state to Stopped.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_STOPPED;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+
+            server.SendCommand();
         }
 
         protected override void OnContinue()
