@@ -18,13 +18,10 @@ namespace ImageService.Controller
         public ImageController(IImageServiceModal modal)
         {
             m_modal = modal;                    // Storing the Modal Of The System
-            ICommand nfc = new NewFileCommand(modal);
-            commands = new Dictionary<int, ICommand>()
-            {
-				// For Now will contain NEW_FILE_COMMAND
-            };
-            commands.Add(0, nfc);
+            commands = new Dictionary<int, ICommand>();
+            commands.Add((int)(CommandEnum.NewFileCommand), new NewFileCommand(modal));
         }
+
         public string ExecuteCommand(int commandID, string[] args, out bool resultSuccesful)
         {
             if (!commands.ContainsKey(commandID))
@@ -32,8 +29,20 @@ namespace ImageService.Controller
                 resultSuccesful = false;
                 return "command not found";
             }
-            // Write Code Here
-            return commands[commandID].Execute(args, out resultSuccesful);
+
+            Task<Tuple<string, bool>> task = new Task<Tuple<string, bool>>(() =>
+            {
+                bool resultSuccesfulTemp;
+                string message = commands[commandID].Execute(args, out resultSuccesfulTemp);
+                return Tuple.Create(message, resultSuccesfulTemp);
+            });
+            task.Start();
+            Tuple<string, bool> result = task.Result;
+            resultSuccesful = result.Item2;
+            return result.Item1;
+
+            //resultSuccesful = true;
+            //return commands[commandID].Execute(args, out resultSuccesful);
         }
     }
 }
