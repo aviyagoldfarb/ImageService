@@ -8,9 +8,11 @@ namespace ImageService.Modal
 {
     public class CommandRecievedEventArgs : EventArgs
     {
-        public int CommandID { get; set; }      // The Command ID
+        // The command ID
+        public int CommandID { get; set; }
         public string[] Args { get; set; }
-        public string RequestDirPath { get; set; }  // The Request Directory
+        // The requested directory
+        public string RequestDirPath { get; set; }
 
         public CommandRecievedEventArgs(int id, string[] args, string path)
         {

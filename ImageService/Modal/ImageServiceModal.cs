@@ -15,8 +15,10 @@ namespace ImageService.Modal
     public class ImageServiceModal : IImageServiceModal
     {
         #region Members
-        private string m_OutputFolder;            // The Output Folder
-        private int m_thumbnailSize;              // The Size Of The Thumbnail Size
+        // The output folder
+        private string m_OutputFolder;
+        // The size of the thumbnail
+        private int m_thumbnailSize;
 
         #endregion
 
@@ -107,6 +109,12 @@ namespace ImageService.Modal
             result = true;
             return success;
         }
+
+        /// <summary>
+        /// The function gets the file date
+        /// </summary>
+        /// <param name="filename">The Path of the Image from the file</param>
+        /// <returns>returns DateTime</returns>
         static DateTime GetFileDate(string filename)
         {
             DateTime now = DateTime.Now;

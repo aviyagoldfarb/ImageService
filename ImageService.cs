@@ -22,7 +22,7 @@ namespace ImageService
 
         private System.ComponentModel.IContainer components;
         private System.Diagnostics.EventLog eventLog1;
-
+        // An ImageServer member
         private ImageServer server;
 
         public enum ServiceState
@@ -96,14 +96,15 @@ namespace ImageService
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
 
-            // create server and logging model
+            // Create an imageModal and a controller   
             IImageServiceModal imageModal = new ImageServiceModal();
             IImageController controller = new ImageController(imageModal);
-
+            // Create a logging model
             LoggingService logger = new LoggingService();
             logger.MessageRecieved += OnMsg;
-
+            // Create the server
             this.server = new ImageServer(controller, logging);
+            // The server creates handlers for each path 
             this.server.createHandlers();
         }
 
@@ -118,7 +119,7 @@ namespace ImageService
             // Update the service state to Stopped.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_STOPPED;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-
+            // The server ends the handlers operation 
             server.SendCommand();
         }
 

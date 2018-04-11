@@ -17,11 +17,12 @@ namespace ImageService.Server
         #region Members
         private IImageController m_controller;
         private ILoggingService m_logging;
-        List<IDirectoryHandler> listOfHandlers;
+        private List<IDirectoryHandler> listOfHandlers;
         #endregion
 
         #region Properties
-        public event EventHandler<CommandRecievedEventArgs> CommandRecieved;          // The event that notifies about a new Command being recieved
+        // The event that notifies about a new Command being recieved
+        public event EventHandler<CommandRecievedEventArgs> CommandRecieved;
         #endregion
 
         public ImageServer(IImageController controller, ILoggingService logging)
@@ -38,8 +39,10 @@ namespace ImageService.Server
             foreach (string path in listOfPaths)
             {
                 IDirectoryHandler handler = new DirectoyHandler(path, this.m_controller, this.m_logging);
+                // handler.OnCommandRecieved subscribes to CommandRecieved EventHandler
                 CommandRecieved += handler.OnCommandRecieved;
-                handler.DirectoryClose += this.OnCloseServer;
+                // OnCloseServer subscribes to DirectoryClose EventHandler
+                handler.DirectoryClose += OnCloseServer;
                 handler.StartHandleDirectory(path);
                 this.listOfHandlers.Add(handler);
             }
@@ -48,15 +51,19 @@ namespace ImageService.Server
         }
         public void SendCommand()
         {
-            string[] args = { };
-            this.CommandRecieved?.Invoke(this, new CommandRecievedEventArgs(1,args, "here"));
+            string[] args = new string[1];
+            args[0] = "";
+            CommandRecieved?.Invoke(this, new CommandRecievedEventArgs((int)CommandEnum.CloseCommand, args, ""));
         }
 
         public void OnCloseServer(object sender, DirectoryCloseEventArgs e)
         {
-            IDirectoryHandler handler = (IDirectoryHandler)sender; 
+            IDirectoryHandler handler = (IDirectoryHandler)sender;
+            // handler.OnCommandRecieved removes itself from CommandRecieved EventHandler
             CommandRecieved -= handler.OnCommandRecieved;
-            handler.DirectoryClose -= this.OnCloseServer;
+            // OnCloseServer removes itself from DirectoryClose EventHandler
+            handler.DirectoryClose -= OnCloseServer;
+            this.listOfHandlers.Remove(handler);
         }
 
     }

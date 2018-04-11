@@ -14,12 +14,13 @@ namespace ImageService.Commands
 
         public NewFileCommand(IImageServiceModal modal)
         {
-            m_modal = modal;            // Storing the Modal
+            // Storing the Modal
+            m_modal = modal;
         }
 
         public string Execute(string[] args, out bool result)
         {
-            // Returns the New Path if result = true, and the error message if result = false
+            // Returns the new path if result = true, and the error message if result = false
             return m_modal.AddFile(args[0], out result);
         }
     }

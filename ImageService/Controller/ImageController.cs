@@ -12,12 +12,14 @@ namespace ImageService.Controller
 {
     public class ImageController : IImageController
     {
-        private IImageServiceModal m_modal;                      // The Modal Object
+        // The Modal object
+        private IImageServiceModal m_modal;
         private Dictionary<int, ICommand> commands;
 
         public ImageController(IImageServiceModal modal)
         {
-            m_modal = modal;                    // Storing the Modal Of The System
+            // Storing the Modal of the system
+            m_modal = modal;
             commands = new Dictionary<int, ICommand>();
             commands.Add((int)(CommandEnum.NewFileCommand), new NewFileCommand(modal));
         }
@@ -40,9 +42,6 @@ namespace ImageService.Controller
             Tuple<string, bool> result = task.Result;
             resultSuccesful = result.Item2;
             return result.Item1;
-
-            //resultSuccesful = true;
-            //return commands[commandID].Execute(args, out resultSuccesful);
         }
     }
 }
