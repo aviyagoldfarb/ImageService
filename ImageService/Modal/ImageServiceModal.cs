@@ -22,6 +22,12 @@ namespace ImageService.Modal
 
         #endregion
 
+        public ImageServiceModal(string outputFolder, int thumbnailSize)
+        {
+            this.m_OutputFolder = outputFolder;
+            this.m_thumbnailSize = thumbnailSize;
+        }
+
         /// <summary>
         /// The Function Addes A file to the system
         /// </summary>

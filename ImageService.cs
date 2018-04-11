@@ -13,6 +13,7 @@ using ImageService.Logging.Modal;
 using ImageService.Server;
 using ImageService.Controller;
 using ImageService.Modal;
+using System.Configuration;
 
 namespace ImageService
 {
@@ -96,14 +97,17 @@ namespace ImageService
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
 
-            // Create an imageModal and a controller   
-            IImageServiceModal imageModal = new ImageServiceModal();
+            // In order to create the ImageServiceModal we need to read two fields from the App.config
+            string outputFolder = ConfigurationManager.AppSettings["OutputDir"];
+            int thumbnailSize = Int32.Parse(ConfigurationManager.AppSettings["ThumbnailSize"]);
+            // Create an imageModal and a controller 
+            IImageServiceModal imageModal = new ImageServiceModal(outputFolder, thumbnailSize);
             IImageController controller = new ImageController(imageModal);
             // Create a logging model
             LoggingService logger = new LoggingService();
             logger.MessageRecieved += OnMsg;
             // Create the server
-            this.server = new ImageServer(controller, logging);
+            this.server = new ImageServer(controller, logger);
             // The server creates handlers for each path 
             this.server.createHandlers();
         }
