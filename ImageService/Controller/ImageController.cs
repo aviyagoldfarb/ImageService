@@ -32,9 +32,11 @@ namespace ImageService.Controller
                 return "command not found";
             }
 
+            // Create an instance of a Task 
             Task<Tuple<string, bool>> task = new Task<Tuple<string, bool>>(() =>
             {
                 bool resultSuccesfulTemp;
+                // Eexecute the relevant command according to the commandID
                 string message = commands[commandID].Execute(args, out resultSuccesfulTemp);
                 return Tuple.Create(message, resultSuccesfulTemp);
             });

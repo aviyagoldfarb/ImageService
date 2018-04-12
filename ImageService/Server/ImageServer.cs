@@ -32,7 +32,10 @@ namespace ImageService.Server
             this.listOfHandlers = new List<IDirectoryHandler>();
         }
 
-        public void createHandlers()
+        /// <summary>
+        /// Creates handler for each specified path in the App.config 
+        /// </summary>
+        public void CreateHandlers()
         {
             string paths = ConfigurationManager.AppSettings["Handler"];
             string[] listOfPaths = paths.Split(';');
@@ -43,12 +46,17 @@ namespace ImageService.Server
                 CommandRecieved += handler.OnCommandRecieved;
                 // OnCloseServer subscribes to DirectoryClose EventHandler
                 handler.DirectoryClose += OnCloseServer;
+                // Creates FileSystemEventHandler to track after any creation of a file or directory in the specified path
                 handler.StartHandleDirectory(path);
                 this.listOfHandlers.Add(handler);
             }
 
 
         }
+
+        /// <summary>
+        /// Invokes the functions that subscribed to CommandRecieved EventHandler
+        /// </summary>
         public void SendCommand()
         {
             string[] args = new string[1];
@@ -56,6 +64,11 @@ namespace ImageService.Server
             CommandRecieved?.Invoke(this, new CommandRecievedEventArgs((int)CommandEnum.CloseCommand, args, ""));
         }
 
+        /// <summary>
+        /// Invokes by the handler.DirectoryClose EventHandler 
+        /// </summary>
+        /// <param name="sender">object</param>
+        /// <param name="e">DirectoryCloseEventArgs</param>
         public void OnCloseServer(object sender, DirectoryCloseEventArgs e)
         {
             IDirectoryHandler handler = (IDirectoryHandler)sender;
@@ -63,6 +76,7 @@ namespace ImageService.Server
             CommandRecieved -= handler.OnCommandRecieved;
             // OnCloseServer removes itself from DirectoryClose EventHandler
             handler.DirectoryClose -= OnCloseServer;
+            // Remove this handler from the listOfHandlers
             this.listOfHandlers.Remove(handler);
         }
 

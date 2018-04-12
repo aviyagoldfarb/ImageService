@@ -109,7 +109,7 @@ namespace ImageService
             // Create the server
             this.server = new ImageServer(controller, logger);
             // The server creates handlers for each path 
-            this.server.createHandlers();
+            this.server.CreateHandlers();
         }
 
         protected override void OnStop()
@@ -132,6 +132,11 @@ namespace ImageService
             eventLog1.WriteEntry("In OnContinue.");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="type"></param>
         private void OnMsg(object sender, MessageRecievedEventArgs type)
         {
             eventLog1.WriteEntry(type.Message);

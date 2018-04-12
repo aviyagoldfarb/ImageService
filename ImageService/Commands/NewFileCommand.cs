@@ -18,6 +18,12 @@ namespace ImageService.Commands
             m_modal = modal;
         }
 
+        /// <summary>
+        /// Calls AddFile function of ImageServiceModal class
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="result"></param>
+        /// <returns>Message for the log</returns>
         public string Execute(string[] args, out bool result)
         {
             // Returns the new path if result = true, and the error message if result = false

@@ -49,7 +49,7 @@ namespace ImageService.Controller.Handlers
         private void OnFileMoved(object source, FileSystemEventArgs e)
         {
             string[] args = new string[1];
-            args[0] = /*this.m_path*/e.FullPath;
+            args[0] = e.FullPath;
 
             string extention = Path.GetExtension(e.FullPath);
             foreach (string ext in this.extentions)
@@ -78,7 +78,7 @@ namespace ImageService.Controller.Handlers
             }
             else if (e.CommandID == (int)CommandEnum.CloseCommand)
             {
-                this.m_logging.Log("Handler closing", MessageTypeEnum.INFO);
+                this.m_logging.Log("Closing Handler", MessageTypeEnum.INFO);
                 this.CloseHandler(e.Args[0]);
             }
         }

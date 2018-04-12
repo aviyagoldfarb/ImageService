@@ -49,7 +49,7 @@ namespace ImageService.Modal
             {
                 Console.WriteLine("{0} Exception caught.", ex);
                 result = false;
-                return failure;
+                return failure + ex.ToString();
             }
 
             // get file creation time, year and month
@@ -58,10 +58,10 @@ namespace ImageService.Modal
             string month = date.Month.ToString();
 
             // Create dirs "year" and "month" (unless they already exist), and move the image to its new dir
-            CreateDirsAndMoveImage(path, "", year, month);
+            string newPathToImage = CreateDirsAndMoveImage(path, "", year, month, nameOfImage);
 
             // create thumbnail image from path
-            Image image = Image.FromFile(path);
+            Image image = Image.FromFile(newPathToImage);
             Image thumb = image.GetThumbnailImage(this.m_thumbnailSize, this.m_thumbnailSize, () => false, IntPtr.Zero);
 
             // check if Thumbnails dir exists, if not – create it
@@ -76,13 +76,13 @@ namespace ImageService.Modal
             {
                 Console.WriteLine("{0} Exception caught.", ex);
                 result = false;
-                return failure;
+                return failure + ex.ToString();
             }
 
             // Create dirs "year" and "month" within Thumbnails dir (unless they already exist), and move the image to its new dir
-            CreateDirsAndMoveImage(path, "\\Thumbnails", year, month);
-            
-            thumb.Save(Path.ChangeExtension(this.m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month, nameOfImage));
+            string newPathToThumbnailImage = CreateDirsAndMoveImage(path, "\\Thumbnails", year, month, nameOfImage);
+            // Save the Thumbnail Image in its new path
+            thumb.Save(Path.ChangeExtension(this.m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month/*newPathToThumbnailImage*/, nameOfImage));
             result = true;
             return success;
         }
@@ -95,26 +95,29 @@ namespace ImageService.Modal
         /// <param name="year">The name of the year dir</param>
         /// <param name="month">The name of the month dir</param> 
         /// <returns>none</returns>
-        public void CreateDirsAndMoveImage(string path, string Thumbnails, string year, string month)
+        public string CreateDirsAndMoveImage(string path, string Thumbnails, string year, string month, string nameOfImage)
         {
             if (Directory.Exists(this.m_OutputFolder + Thumbnails + "\\" + year))
             {
                 if (Directory.Exists(this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month))
                 {
-                    File.Move(path, this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month);
+                    if (Thumbnails == "")
+                        File.Move(path, this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month + "\\" + nameOfImage);
                 }
                 else
                 {
                     Directory.CreateDirectory(this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month);
-                    File.Move(path, this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month);
+                    if (Thumbnails == "")
+                        File.Move(path, this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month + "\\" + nameOfImage);
                 }
             }
             else
             {
-                Directory.CreateDirectory(this.m_OutputFolder + Thumbnails + "\\" + year);
                 Directory.CreateDirectory(this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month);
-                File.Move(path, this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month);
+                if (Thumbnails == "")
+                    File.Move(path, this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month + "\\" + nameOfImage);
             }
+            return this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month + "\\" + nameOfImage;
         }
 
         /// <summary>
