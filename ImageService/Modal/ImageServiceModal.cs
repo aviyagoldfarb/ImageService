@@ -19,7 +19,6 @@ namespace ImageService.Modal
         private string m_OutputFolder;
         // The size of the thumbnail
         private int m_thumbnailSize;
-
         #endregion
 
         public ImageServiceModal(string outputFolder, int thumbnailSize)
@@ -41,9 +40,9 @@ namespace ImageService.Modal
             // check if outputDir exists, if not – create it
             try
             {
-                if (!Directory.Exists(m_OutputFolder))
+                if (!Directory.Exists(this.m_OutputFolder))
                 {
-                    Directory.CreateDirectory(m_OutputFolder);
+                    Directory.CreateDirectory(this.m_OutputFolder);
                 }
             }
             catch (Exception ex)
@@ -52,36 +51,25 @@ namespace ImageService.Modal
                 result = false;
                 return failure;
             }
+
             // get file creation time, year and month
             DateTime date = GetFileDate(path);
             string year = date.Year.ToString();
             string month = date.Month.ToString();
-            //
-            if (Directory.Exists(m_OutputFolder + "\\" +  year)) {
-                if (Directory.Exists(m_OutputFolder + "\\" + year + "\\" + month)) {
-                    File.Move(path, m_OutputFolder + "\\" + year + "\\" + month);
-                }
-                else {
-                    Directory.CreateDirectory(m_OutputFolder + "\\" + year + "\\" + month);
-                    File.Move(path, m_OutputFolder + "\\" + year + "\\" + month);
-                }  
-            }
-            else {
-                Directory.CreateDirectory(m_OutputFolder + "\\" + year);
-                Directory.CreateDirectory(m_OutputFolder + "\\" + year + "\\" + month);
-                File.Move(path, m_OutputFolder + "\\" + year + "\\" + month);
-            }
+
+            // Create dirs "year" and "month" (unless they already exist), and move the image to its new dir
+            CreateDirsAndMoveImage(path, "", year, month);
 
             // create thumbnail image from path
             Image image = Image.FromFile(path);
-            Image thumb = image.GetThumbnailImage(m_thumbnailSize, m_thumbnailSize, () => false, IntPtr.Zero);
+            Image thumb = image.GetThumbnailImage(this.m_thumbnailSize, this.m_thumbnailSize, () => false, IntPtr.Zero);
 
             // check if Thumbnails dir exists, if not – create it
             try
             {
-                if (!Directory.Exists(m_OutputFolder + "\\" + "Thumbnails"))
+                if (!Directory.Exists(this.m_OutputFolder + "\\" + "Thumbnails"))
                 {
-                    Directory.CreateDirectory(m_OutputFolder + "\\" + "Thumbnails");
+                    Directory.CreateDirectory(this.m_OutputFolder + "\\" + "Thumbnails");
                 }
             }
             catch (Exception ex)
@@ -90,30 +78,43 @@ namespace ImageService.Modal
                 result = false;
                 return failure;
             }
+
+            // Create dirs "year" and "month" within Thumbnails dir (unless they already exist), and move the image to its new dir
+            CreateDirsAndMoveImage(path, "\\Thumbnails", year, month);
             
-            //
-            if (Directory.Exists(m_OutputFolder + "\\" + "Thumbnails" + "\\" + year))
+            thumb.Save(Path.ChangeExtension(this.m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month, nameOfImage));
+            result = true;
+            return success;
+        }
+
+        /// <summary>
+        /// The Function Addes A file to the system
+        /// </summary>
+        /// <param name="path">The Path of the Image from the file</param>
+        /// <param name="Thumbnails">In case we want to create the thumbnail dir</param>
+        /// <param name="year">The name of the year dir</param>
+        /// <param name="month">The name of the month dir</param> 
+        /// <returns>none</returns>
+        public void CreateDirsAndMoveImage(string path, string Thumbnails, string year, string month)
+        {
+            if (Directory.Exists(this.m_OutputFolder + Thumbnails + "\\" + year))
             {
-                if (Directory.Exists(m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month))
+                if (Directory.Exists(this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month))
                 {
-                    File.Move(path, m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month);
+                    File.Move(path, this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month);
                 }
                 else
                 {
-                    Directory.CreateDirectory(m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month);
-                    File.Move(path, m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month);
+                    Directory.CreateDirectory(this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month);
+                    File.Move(path, this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month);
                 }
             }
             else
             {
-                Directory.CreateDirectory(m_OutputFolder + "\\" + "Thumbnails" + "\\" + year);
-                Directory.CreateDirectory(m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month);
-                File.Move(path, m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month);
+                Directory.CreateDirectory(this.m_OutputFolder + Thumbnails + "\\" + year);
+                Directory.CreateDirectory(this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month);
+                File.Move(path, this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month);
             }
-
-            thumb.Save(Path.ChangeExtension(m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month, nameOfImage));
-            result = true;
-            return success;
         }
 
         /// <summary>
@@ -121,11 +122,31 @@ namespace ImageService.Modal
         /// </summary>
         /// <param name="filename">The Path of the Image from the file</param>
         /// <returns>returns DateTime</returns>
-        static DateTime GetFileDate(string filename)
+        public DateTime GetFileDate(string filename)
         {
             DateTime now = DateTime.Now;
             TimeSpan localOffset = now - now.ToUniversalTime();
             return File.GetLastWriteTimeUtc(filename) + localOffset;
         }
+        /*
+            if (Directory.Exists(this.m_OutputFolder + "\\" + "Thumbnails" + "\\" + year))
+            {
+                if (Directory.Exists(this.m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month))
+                {
+                    File.Move(path, this.m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month);
+                }
+                else
+                {
+                    Directory.CreateDirectory(this.m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month);
+                    File.Move(path, this.m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month);
+                }
+            }
+            else
+            {
+                Directory.CreateDirectory(this.m_OutputFolder + "\\" + "Thumbnails" + "\\" + year);
+                Directory.CreateDirectory(this.m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month);
+                File.Move(path, this.m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month);
+            }
+            */
     }
 }

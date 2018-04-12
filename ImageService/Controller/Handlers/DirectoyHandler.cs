@@ -49,7 +49,7 @@ namespace ImageService.Controller.Handlers
         private void OnFileMoved(object source, FileSystemEventArgs e)
         {
             string[] args = new string[1];
-            args[0] = this.m_path;
+            args[0] = /*this.m_path*/e.FullPath;
 
             string extention = Path.GetExtension(e.FullPath);
             foreach (string ext in this.extentions)
