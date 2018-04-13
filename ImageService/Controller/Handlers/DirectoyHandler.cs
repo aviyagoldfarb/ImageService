@@ -38,7 +38,10 @@ namespace ImageService.Controller.Handlers
             this.m_dirWatcher = new FileSystemWatcher(path);
         }
 
-        // The Function Recieves the directory to Handle
+        /// <summary>
+        /// The function recieves the directory to handle
+        /// </summary>
+        /// <param name="dirPath">Directory to handle</param>
         public void StartHandleDirectory(string dirPath)
         {
             // When a file or directory in the specified path is created, invoke OnFileMoved function
@@ -46,11 +49,16 @@ namespace ImageService.Controller.Handlers
             this.m_dirWatcher.EnableRaisingEvents = true;
         }
 
+        /// <summary>
+        /// Will invoke by the FileSystemWatcher
+        /// </summary>
+        /// <param name="source">The invoker object</param>
+        /// <param name="e">FileSystemEventArgs</param>
         private void OnFileMoved(object source, FileSystemEventArgs e)
         {
             string[] args = new string[1];
             args[0] = e.FullPath;
-
+            // Check if the new file belongs to the type of files we need to handle
             string extention = Path.GetExtension(e.FullPath);
             foreach (string ext in this.extentions)
             {
@@ -61,6 +69,11 @@ namespace ImageService.Controller.Handlers
             }  
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void OnCommandRecieved(object sender, CommandRecievedEventArgs e)
         {
             if (e.CommandID == (int)CommandEnum.NewFileCommand)
@@ -83,6 +96,10 @@ namespace ImageService.Controller.Handlers
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
         public void CloseHandler(string path)
         {
             this.m_dirWatcher.EnableRaisingEvents = false;

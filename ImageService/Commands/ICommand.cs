@@ -9,7 +9,7 @@ namespace ImageService.Commands
 {
     public interface ICommand
     {
-        // The function that will execute The 
+        // The function that will execute the commands
         string Execute(string[] args, out bool result);
     }
 }
