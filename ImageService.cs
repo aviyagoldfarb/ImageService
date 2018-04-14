@@ -105,6 +105,7 @@ namespace ImageService
             IImageController controller = new ImageController(imageModal);
             // Create a logging model
             LoggingService logger = new LoggingService();
+            // OnMsg subscribes to MessageRecieved EventHandler
             logger.MessageRecieved += OnMsg;
             // Create the server
             this.server = new ImageServer(controller, logger);
@@ -133,10 +134,10 @@ namespace ImageService
         }
 
         /// <summary>
-        /// 
+        /// Invokes by the MessageRecieved EventHandler
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="type"></param>
+        /// <param name="sender">The invoker object</param>
+        /// <param name="type">MessageRecievedEventArgs</param>
         private void OnMsg(object sender, MessageRecievedEventArgs type)
         {
             eventLog1.WriteEntry(type.Message);

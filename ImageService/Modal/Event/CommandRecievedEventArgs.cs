@@ -10,6 +10,7 @@ namespace ImageService.Modal
     {
         // The command ID
         public int CommandID { get; set; }
+        // The arguments for the command
         public string[] Args { get; set; }
         // The requested directory
         public string RequestDirPath { get; set; }

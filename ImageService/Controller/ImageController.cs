@@ -24,6 +24,13 @@ namespace ImageService.Controller
             commands.Add((int)(CommandEnum.NewFileCommand), new NewFileCommand(modal));
         }
 
+        /// <summary>
+        /// Executing the requeted command
+        /// </summary>
+        /// <param name="commandID">The id of the command</param>
+        /// <param name="args">The arguments that needed for executing the command</param>
+        /// <param name="resultSuccesful">Will hold the result of the execution</param>
+        /// <returns></returns>
         public string ExecuteCommand(int commandID, string[] args, out bool resultSuccesful)
         {
             if (!commands.ContainsKey(commandID))
@@ -35,10 +42,10 @@ namespace ImageService.Controller
             // Create an instance of a Task 
             Task<Tuple<string, bool>> task = new Task<Tuple<string, bool>>(() =>
             {
-                bool resultSuccesfulTemp;
+                bool resultTemp;
                 // Eexecute the relevant command according to the commandID
-                string message = commands[commandID].Execute(args, out resultSuccesfulTemp);
-                return Tuple.Create(message, resultSuccesfulTemp);
+                string message = commands[commandID].Execute(args, out resultTemp);
+                return Tuple.Create(message, resultTemp);
             });
             task.Start();
             Tuple<string, bool> result = task.Result;

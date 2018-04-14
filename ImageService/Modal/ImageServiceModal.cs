@@ -93,7 +93,7 @@ namespace ImageService.Modal
         }
 
         /// <summary>
-        /// The Function create dirs and moves the Image to its new dir
+        /// The Function creates dirs and moves the Image to its new dir
         /// </summary>
         /// <param name="path">The Path of the Image from the file</param>
         /// <param name="Thumbnails">In case we want to create the thumbnail dir</param>

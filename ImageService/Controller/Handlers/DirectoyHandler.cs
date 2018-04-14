@@ -70,16 +70,18 @@ namespace ImageService.Controller.Handlers
         }
 
         /// <summary>
-        /// 
+        /// Will invoke by OnFileMoved function, or by the EventHandler of the server 'CommandRecieved'
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The invoker object</param>
+        /// <param name="e">CommandRecievedEventArgs</param>
         public void OnCommandRecieved(object sender, CommandRecievedEventArgs e)
         {
+            // Check the CommandID
             if (e.CommandID == (int)CommandEnum.NewFileCommand)
             {
                 bool result;
                 string messsage = this.m_controller.ExecuteCommand(e.CommandID, e.Args, out result);
+                // Check the result of the command execution
                 if (result)
                 {
                     this.m_logging.Log(messsage, MessageTypeEnum.INFO);
@@ -97,7 +99,7 @@ namespace ImageService.Controller.Handlers
         }
 
         /// <summary>
-        /// 
+        ///  Will invoke by OnCommandRecieved function in case of CloseCommand 
         /// </summary>
         /// <param name="path"></param>
         public void CloseHandler(string path)
