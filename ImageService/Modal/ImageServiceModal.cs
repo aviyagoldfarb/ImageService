@@ -19,15 +19,12 @@ namespace ImageService.Modal
         private string m_OutputFolder;
         // The size of the thumbnail
         private int m_thumbnailSize;
-        // will use us for GetDateTakenFromImage function
-        private static Regex r;
         #endregion
 
         public ImageServiceModal(string outputFolder, int thumbnailSize)
         {
             this.m_OutputFolder = outputFolder;
             this.m_thumbnailSize = thumbnailSize;
-            r = new Regex(":");
         }
 
         /// <summary>
@@ -45,7 +42,8 @@ namespace ImageService.Modal
             {
                 if (!Directory.Exists(this.m_OutputFolder))
                 {
-                    Directory.CreateDirectory(this.m_OutputFolder);
+                    DirectoryInfo di = Directory.CreateDirectory(this.m_OutputFolder);
+                    di.Attributes = FileAttributes.Directory | FileAttributes.Hidden;
                 }
             }
             catch (Exception ex)
@@ -54,9 +52,9 @@ namespace ImageService.Modal
                 result = false;
                 return failure + ex.ToString();
             }
-
+            
             // get file creation time, year and month
-            DateTime date = GetDateTakenFromImage/*GetFileDate*/(path);
+            DateTime date = GetFileDate(path);
             string year = date.Year.ToString();
             string month = date.Month.ToString();
 
@@ -66,6 +64,7 @@ namespace ImageService.Modal
             // create thumbnail image from path
             Image image = Image.FromFile(newPathToImage);
             Image thumb = image.GetThumbnailImage(this.m_thumbnailSize, this.m_thumbnailSize, () => false, IntPtr.Zero);
+            image.Dispose();
 
             // check if Thumbnails dir exists, if not – create it
             try
@@ -81,12 +80,14 @@ namespace ImageService.Modal
                 result = false;
                 return failure + ex.ToString();
             }
+            // Change the extention for the Thumbnail image
+            string nameOfThumbnailImage = Path.GetFileName(newPathToImage);
 
             // Create dirs "year" and "month" within Thumbnails dir (unless they already exist)
-            string newPathToThumbnailImage = CreateDirsAndMoveImage(path, "\\Thumbnails", year, month, nameOfImage);
+            string newPathToThumbnailImage = CreateDirsAndMoveImage(path, "\\Thumbnails", year, month, nameOfThumbnailImage);
             // Save the Thumbnail Image into its new path
-            thumb.Save(Path.ChangeExtension(/*this.m_OutputFolder + "\\" + "Thumbnails" + "\\" + year + "\\" + month*/newPathToThumbnailImage, nameOfImage));
-            image.Dispose();
+            thumb.Save(/*Path.ChangeExtension(newPathToThumbnailImage, nameOfImage)*/newPathToThumbnailImage);
+            //image.Dispose();
             thumb.Dispose();
             result = true;
             return success + ".The new path is: " + newPathToImage;
@@ -111,11 +112,12 @@ namespace ImageService.Modal
                     string uniqueNameOfImage = nameOfImage;
                     while (File.Exists(this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month + "\\" + uniqueNameOfImage))
                     {
-                        uniqueNameOfImage = nameOfImage + i.ToString();
+                        uniqueNameOfImage = i.ToString() + nameOfImage;
                         i++;
                     }    
                     if (Thumbnails == "")
                         File.Move(path, this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month + "\\" + uniqueNameOfImage);
+                    return this.m_OutputFolder + Thumbnails + "\\" + year + "\\" + month + "\\" + uniqueNameOfImage;
                 }
                 else
                 {
@@ -143,22 +145,6 @@ namespace ImageService.Modal
             DateTime now = DateTime.Now;
             TimeSpan localOffset = now - now.ToUniversalTime();
             return File.GetLastWriteTimeUtc(filename) + localOffset;
-        }
-
-        /// <summary>
-        /// Retrieves the datetime WITHOUT loading the whole image
-        /// </summary>
-        /// <param name="path">The Path of the Image from the file</param>
-        /// <returns>DateTime</returns>
-        public static DateTime GetDateTakenFromImage(string path)
-        {
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-            using (Image myImage = Image.FromStream(fs, false, false))
-            {
-                PropertyItem propItem = myImage.GetPropertyItem(36867);
-                string dateTaken = r.Replace(Encoding.UTF8.GetString(propItem.Value), "-", 2);
-                return DateTime.Parse(dateTaken);
-            }
         }
     }
 }
