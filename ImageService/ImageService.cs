@@ -14,6 +14,7 @@ using ImageService.Server;
 using ImageService.Controller;
 using ImageService.Modal;
 using System.Configuration;
+using ImageService.Controller.Handlers;
 
 namespace ImageService
 {
@@ -107,10 +108,12 @@ namespace ImageService
             LoggingService logger = new LoggingService();
             // OnMsg subscribes to MessageRecieved EventHandler
             logger.MessageRecieved += OnMsg;
+            IClientHandler ch = new ClientHandler();
             // Create the server
-            this.server = new ImageServer(controller, logger);
+            this.server = new ImageServer(controller, logger, 7000, ch);
             // The server creates handlers for each path 
             this.server.CreateHandlers();
+            this.server.Start();
         }
 
         protected override void OnStop()

@@ -1,10 +1,12 @@
 ﻿using ImageService.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -145,6 +147,19 @@ namespace ImageService.Modal
             DateTime now = DateTime.Now;
             TimeSpan localOffset = now - now.ToUniversalTime();
             return File.GetLastWriteTimeUtc(filename) + localOffset;
+        }
+
+        public string GetConfig(out bool result)
+        {
+            result = false;
+            string paths1 = "Handler$" + ConfigurationManager.AppSettings["Handler"];
+            string paths2 = "OutputDir$" + ConfigurationManager.AppSettings["OutputDir"];
+            string paths3 = "SourceName$" + ConfigurationManager.AppSettings["SourceName"];
+            string paths4 = "LogName$" + ConfigurationManager.AppSettings["LogName"];
+            string paths5 = "ThumbnailSize$" + ConfigurationManager.AppSettings["ThumbnailSize"];
+
+            result = true;
+            return (paths1 + ' ' + paths2 + ' ' + paths3 + ' ' + paths4 + ' ' + paths5);
         }
     }
 }

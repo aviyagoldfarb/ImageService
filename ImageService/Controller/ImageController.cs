@@ -5,6 +5,7 @@ using ImageService.Modal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,6 +23,7 @@ namespace ImageService.Controller
             m_modal = modal;
             commands = new Dictionary<int, ICommand>();
             commands.Add((int)(CommandEnum.NewFileCommand), new NewFileCommand(modal));
+            commands.Add((int)(CommandEnum.GetConfigCommand), new GetConfigCommand(modal));
         }
 
         /// <summary>

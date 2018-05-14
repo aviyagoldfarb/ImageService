@@ -65,6 +65,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImageService\Commands\GetConfigCommand.cs" />
+    <Compile Include="ImageService\Controller\Handlers\ClientHandler.cs" />
+    <Compile Include="ImageService\Controller\Handlers\IClientHandler.cs" />
     <Compile Include="ImageService\ImageService.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,19 +20,60 @@ namespace ImageService.Server
         private IImageController m_controller;
         private ILoggingService m_logging;
         private List<IDirectoryHandler> listOfHandlers;
+        private int port;
+        private TcpListener listener;
+        private IClientHandler ch;
+        private TcpClient client;
         #endregion
 
         #region Properties
         // The event that notifies about a new Command being recieved
         public event EventHandler<CommandRecievedEventArgs> CommandRecieved;
+
         #endregion
 
-        public ImageServer(IImageController controller, ILoggingService logging)
+        public ImageServer(IImageController controller, ILoggingService logging, int port, IClientHandler ch)
         {
             this.m_controller = controller;
             this.m_logging = logging;
             this.listOfHandlers = new List<IDirectoryHandler>();
+            this.port = port;
+            this.ch = ch;
         }
+
+        public void Start()
+        {
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
+            listener = new TcpListener(ep);
+            listener.Start();
+            Console.WriteLine("Waiting for connections...");
+
+            Task task = new Task(() => {
+                while (true)
+                {
+                    try
+                    {
+                        this.client = listener.AcceptTcpClient();
+                        Console.WriteLine("Got new connection");
+                        ch.HandleClient(client, this);
+                    }
+                    catch (SocketException)
+                    {
+                        break;
+                    }
+                }
+                Console.WriteLine("Server stopped");
+            });
+            task.Start();
+        }
+
+        public void StopListen()
+        {
+            listener.Stop();
+        }
+
+
+
 
         /// <summary>
         /// Creates handler for each specified path in the App.config 
@@ -41,7 +84,7 @@ namespace ImageService.Server
             string[] listOfPaths = paths.Split(';');
             foreach (string path in listOfPaths)
             {
-                IDirectoryHandler handler = new DirectoyHandler(path, this.m_controller, this.m_logging);
+                IDirectoryHandler handler = new DirectoyHandler(path, this.m_controller, this.m_logging, this.client);
                 // handler.OnCommandRecieved subscribes to CommandRecieved EventHandler
                 CommandRecieved += handler.OnCommandRecieved;
                 // OnCloseServer subscribes to DirectoryClose EventHandler
@@ -50,8 +93,18 @@ namespace ImageService.Server
                 handler.StartHandleDirectory(path);
                 this.listOfHandlers.Add(handler);
             }
-
-
+        }
+        public string RemoveHandler(string path)
+        {
+            foreach (IDirectoryHandler handler in this.listOfHandlers)
+            {
+                 if (handler.getPath() == path)
+                {
+                    CommandRecieved -= handler.OnCommandRecieved;
+                    return ("sucsses");
+                }
+             }
+            return ("failed");
         }
 
         /// <summary>
@@ -80,5 +133,8 @@ namespace ImageService.Server
             this.listOfHandlers.Remove(handler);
         }
 
+        public IImageController GetController() {
+            return this.m_controller;
+        }
     }
 }
