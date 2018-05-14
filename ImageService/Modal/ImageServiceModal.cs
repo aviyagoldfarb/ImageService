@@ -59,6 +59,8 @@ namespace ImageService.Modal
             DateTime date = GetFileDate(path);
             string year = date.Year.ToString();
             string month = date.Month.ToString();
+            // In order to sync between the two accesses to 'path' variable in functions 'GetFileDate' and 'CreateDirsAndMoveImage'
+            System.Threading.Thread.Sleep(1000);
 
             // Create dirs "year" and "month" (unless they already exist), and move the image to its new dir
             string newPathToImage = CreateDirsAndMoveImage(path, "", year, month, nameOfImage);

@@ -1,0 +1,107 @@
+commit a4b722254c139da2c759b657e4d894d745bf930b
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Sun Apr 15 18:32:49 2018 +0300
+
+    15.4 18:32
+
+commit d53ebff870a7e7ee81dc78af6e8cc575dae18027
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Sun Apr 15 16:12:21 2018 +0300
+
+    15.4 16:12
+
+commit da84ebb36c90ecf11d15732ee04327f8aa643998
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Sat Apr 14 23:56:00 2018 +0300
+
+    14.4 23:55
+
+commit 71ce8b5e77a8ee1be171b2f79c9e3f6db762a0c2
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Fri Apr 13 17:50:20 2018 +0300
+
+    13.4 18:00
+
+commit 10c643e89e556b12473efb9d53363834f2d60a1f
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Thu Apr 12 17:48:07 2018 +0300
+
+    12.4 17:48
+
+commit ab9c4ed5121bb87a37a433df1f810f2b5ec25393
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Thu Apr 12 10:57:13 2018 +0300
+
+    12.4 10:58
+
+commit 8f67018373060ee2f39859f8a058d6490d9f1bf2
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Wed Apr 11 21:11:45 2018 +0300
+
+    11.4 21:12
+
+commit c0debc80a40ca52b9ec8836749ac2cd8acb5ba13
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Wed Apr 11 17:48:12 2018 +0300
+
+    11.4 17:48
+
+commit f3cbc6d16c9246fdec18224d91d11a981f9ad633
+Author: udigoldman1 <udigoldman1@gmail.com>
+Date:   Tue Apr 10 22:14:54 2018 +0300
+
+    10.4 22:14
+
+commit 480988f204303775898a653e2756f168ef63219a
+Author: udigoldman1 <udigoldman1@gmail.com>
+Date:   Tue Apr 10 18:36:39 2018 +0300
+
+    10.4 18:36
+
+commit 80962c694f4805d9890904f2b6415d5a7e99273c
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Tue Apr 10 13:14:55 2018 +0300
+
+    10.4 13:15
+
+commit b277ffd51ef6a79805b7ba812cdf3e3f6a12d39c
+Author: udigoldman1 <udigoldman1@gmail.com>
+Date:   Mon Apr 9 22:56:01 2018 +0300
+
+    9.4 22:55
+
+commit 9f0755bddd78b5eaf1b2381c8afcd232e60c0ef6
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Mon Apr 9 21:36:21 2018 +0300
+
+    9.4 21:36
+
+commit c100f4cc46e72454746068750cb7b217ec398e76
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Mon Apr 9 13:22:46 2018 +0300
+
+    9.4 13:22
+
+commit ef1bec2cb6c85911cb7e6f3f76c9a2b83090d888
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Sun Apr 8 19:30:07 2018 +0300
+
+    8.4 19:30
+
+commit c880d44d2d1b7dccb20b1f8bb26e770400b361d9
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Sun Apr 8 09:21:02 2018 +0300
+
+    8.4 9:20
+
+commit 943ae7f4fcd261ea3928d3017d4a9bd13279e553
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Thu Mar 29 13:35:30 2018 +0300
+
+    Add project files.
+
+commit 07d098eefc7fd739db6b74e4a36a2b2caa38068f
+Author: hana <hana@DESKTOP-PLP8GA3>
+Date:   Thu Mar 29 13:35:14 2018 +0300
+
+    Add .gitignore and .gitattributes.
