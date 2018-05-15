@@ -1,4 +1,5 @@
 ﻿using ImageService.Controller;
+using ImageService.Infrastructure.Enums;
 using ImageService.Server;
 using System;
 using System.Collections.Generic;
@@ -14,39 +15,31 @@ namespace ImageService.Controller.Handlers
     {
         public void HandleClient(TcpClient client, ImageServer server)
         {
-            string[] strCommand;
-            int commandID;
             bool resultSuccesful;
             string result;
 
-
             new Task(() =>
             {
-                using (NetworkStream stream = client.GetStream())
-                using (StreamReader reader = new StreamReader(stream))
-                using (StreamWriter writer = new StreamWriter(stream))
+                NetworkStream stream = client.GetStream();
+                BinaryReader reader = new BinaryReader(stream);
+                BinaryWriter writer = new BinaryWriter(stream);
+
+                //string entireCommand = reader.ReadLine();
+                string command = reader.ReadString();
+
+                // here supose to be the code that getting the data in the format that we using.
+
+                if (command == "RemoveHandler")
                 {
-
-                    strCommand = reader.ReadLine().Split(' ');
-                    commandID = int.Parse(strCommand[0]);
-
-                    /** here supose to be the 
-                         code that getting the data
-                    in the format that we using.
-
-                       */
-                    //  Console.WriteLine("Got command: %d\n", commandId);
-
-
-                    if (commandID == 5)
-                    {
-                        result = server.RemoveHandler(strCommand[1]);
-                    } else
-                    {
-                        result = server.GetController().ExecuteCommand(commandID, strCommand, out resultSuccesful);
-                    }
-                    writer.Write(result);
+                        result = server.RemoveHandler("some path");
+                } else
+                {
+                    string[] args = new string[1];
+                    args[0] = "";
+                    result = server.GetController().ExecuteCommand(Convert.ToInt32((Enum.Parse(typeof(CommandEnum), command))), args, out resultSuccesful);
                 }
+                writer.Write(result);
+                
                 client.Close();
             }).Start();
         }

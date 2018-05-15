@@ -2,6 +2,7 @@
 using ImageService.Controller.Handlers;
 using ImageService.Infrastructure.Enums;
 using ImageService.Logging;
+using ImageService.Logging.Modal;
 using ImageService.Modal;
 using System;
 using System.Collections.Generic;
@@ -43,18 +44,22 @@ namespace ImageService.Server
 
         public void Start()
         {
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
+            //this.m_logging.Log("before communicationConfig", MessageTypeEnum.INFO);
+            //string[] communicationConfig = System.IO.File.ReadAllLines("communicationConfig");
+            //this.m_logging.Log("after communicationConfig", MessageTypeEnum.INFO);
+
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), this.port);
+            //IPEndPoint ep = new IPEndPoint(IPAddress.Parse(communicationConfig[0]), int.Parse(communicationConfig[1]));
             listener = new TcpListener(ep);
             listener.Start();
-            Console.WriteLine("Waiting for connections...");
-
+            // Waiting for connections, each connection in a new thread
             Task task = new Task(() => {
                 while (true)
                 {
                     try
                     {
                         this.client = listener.AcceptTcpClient();
-                        Console.WriteLine("Got new connection");
+                        // Got a new connection
                         ch.HandleClient(client, this);
                     }
                     catch (SocketException)
@@ -62,7 +67,7 @@ namespace ImageService.Server
                         break;
                     }
                 }
-                Console.WriteLine("Server stopped");
+                // Server stopped
             });
             task.Start();
         }
@@ -71,10 +76,7 @@ namespace ImageService.Server
         {
             listener.Stop();
         }
-
-
-
-
+        
         /// <summary>
         /// Creates handler for each specified path in the App.config 
         /// </summary>
@@ -93,7 +95,9 @@ namespace ImageService.Server
                 handler.StartHandleDirectory(path);
                 this.listOfHandlers.Add(handler);
             }
+            this.Start();
         }
+
         public string RemoveHandler(string path)
         {
             foreach (IDirectoryHandler handler in this.listOfHandlers)

@@ -110,10 +110,9 @@ namespace ImageService
             logger.MessageRecieved += OnMsg;
             IClientHandler ch = new ClientHandler();
             // Create the server
-            this.server = new ImageServer(controller, logger, 7000, ch);
+            this.server = new ImageServer(controller, logger, 8000, ch);
             // The server creates handlers for each path 
             this.server.CreateHandlers();
-            this.server.Start();
         }
 
         protected override void OnStop()
