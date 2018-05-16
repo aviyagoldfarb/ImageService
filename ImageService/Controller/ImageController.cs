@@ -17,14 +17,14 @@ namespace ImageService.Controller
         private IImageServiceModal m_modal;
         private Dictionary<int, ICommand> commands;
 
-        public ImageController(IImageServiceModal modal)
+        public ImageController(IImageServiceModal modal, System.Diagnostics.EventLog eventLog)
         {
             // Storing the Modal of the system
             m_modal = modal;
             commands = new Dictionary<int, ICommand>();
             commands.Add((int)(CommandEnum.NewFileCommand), new NewFileCommand(modal));
             commands.Add((int)(CommandEnum.GetConfigCommand), new GetConfigCommand());
-            commands.Add((int)(CommandEnum.LogCommand), new LogCommand());
+            commands.Add((int)(CommandEnum.LogCommand), new LogCommand(eventLog));
         }
 
         /// <summary>

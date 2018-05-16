@@ -1,18 +1,20 @@
-﻿using System;
+﻿using ImageService.Commands;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ImageService.ImageService.Commands
+namespace ImageService.Commands
 {
     class LogCommand : ICommand
     {
-        
+        private System.Diagnostics.EventLog eventLog;
 
-        public LogCommand()
+        public LogCommand(System.Diagnostics.EventLog eventLog)
         {
-            
+            this.eventLog = eventLog;
         }
 
         /// <summary>
@@ -23,7 +25,14 @@ namespace ImageService.ImageService.Commands
         /// <returns>Message for the log</returns>
         public string Execute(string[] args, out bool result)
         {
-           
+            result = false;
+            string entireLog = "";
+            foreach (EventLogEntry entry in this.eventLog.Entries)
+            {
+                entireLog += (entry.EntryType + "$" + entry.Message + "\n");
+            }
+            result = true;
+            return entireLog;
         }
     }
 }

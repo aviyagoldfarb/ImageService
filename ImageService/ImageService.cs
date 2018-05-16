@@ -78,7 +78,7 @@ namespace ImageService
         public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
         {
             // TODO: Insert monitoring activities here.  
-            eventLog1.WriteEntry("Monitoring the System", EventLogEntryType.Information, eventId++);
+            eventLog1.WriteEntry("Monitoring the System.", EventLogEntryType.Information, eventId++);
         }
 
         protected override void OnStart(string[] args)
@@ -88,7 +88,7 @@ namespace ImageService
             serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-            eventLog1.WriteEntry("In OnStart");
+            eventLog1.WriteEntry("In OnStart.", EventLogEntryType.Information);
             // Set up a timer to trigger every minute.  
             System.Timers.Timer timer = new System.Timers.Timer();
             timer.Interval = 60000; // 60 seconds  
@@ -103,14 +103,14 @@ namespace ImageService
             int thumbnailSize = Int32.Parse(ConfigurationManager.AppSettings["ThumbnailSize"]);
             // Create an imageModal and a controller 
             IImageServiceModal imageModal = new ImageServiceModal(outputFolder, thumbnailSize);
-            IImageController controller = new ImageController(imageModal);
+            IImageController controller = new ImageController(imageModal, eventLog1);
             // Create a logging model
             LoggingService logger = new LoggingService();
             // OnMsg subscribes to MessageRecieved EventHandler
             logger.MessageRecieved += OnMsg;
             IClientHandler ch = new ClientHandler();
             // Create the server
-            this.server = new ImageServer(controller, logger, 8000, ch);
+            this.server = new ImageServer(controller, logger, ch);
             // The server creates handlers for each path 
             this.server.CreateHandlers();
         }
@@ -122,7 +122,7 @@ namespace ImageService
             serviceStatus.dwCurrentState = ServiceState.SERVICE_STOP_PENDING;
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-            eventLog1.WriteEntry("In onStop.");
+            eventLog1.WriteEntry("In onStop.", EventLogEntryType.Information);
             // Update the service state to Stopped.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_STOPPED;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
@@ -132,7 +132,7 @@ namespace ImageService
 
         protected override void OnContinue()
         {
-            eventLog1.WriteEntry("In OnContinue.");
+            eventLog1.WriteEntry("In OnContinue.", EventLogEntryType.Information);
         }
 
         /// <summary>
@@ -142,7 +142,19 @@ namespace ImageService
         /// <param name="type">MessageRecievedEventArgs</param>
         private void OnMsg(object sender, MessageRecievedEventArgs type)
         {
-            eventLog1.WriteEntry(type.Message);
+            if (type.Status == MessageTypeEnum.INFO)
+            {
+                eventLog1.WriteEntry(type.Message, EventLogEntryType.Information);
+            }
+            else if (type.Status == MessageTypeEnum.WARNING)
+            {
+                eventLog1.WriteEntry(type.Message, EventLogEntryType.Warning);
+            }
+            else if (type.Status == MessageTypeEnum.FAIL)
+            {
+                eventLog1.WriteEntry(type.Message, EventLogEntryType.FailureAudit);
+            }
+
         }
     }
 }

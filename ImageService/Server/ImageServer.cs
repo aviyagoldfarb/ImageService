@@ -7,6 +7,7 @@ using ImageService.Modal;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -21,7 +22,6 @@ namespace ImageService.Server
         private IImageController m_controller;
         private ILoggingService m_logging;
         private List<IDirectoryHandler> listOfHandlers;
-        private int port;
         private TcpListener listener;
         private IClientHandler ch;
         private TcpClient client;
@@ -33,22 +33,23 @@ namespace ImageService.Server
 
         #endregion
 
-        public ImageServer(IImageController controller, ILoggingService logging, int port, IClientHandler ch)
+        public ImageServer(IImageController controller, ILoggingService logging, IClientHandler ch)
         {
             this.m_controller = controller;
             this.m_logging = logging;
             this.listOfHandlers = new List<IDirectoryHandler>();
-            this.port = port;
             this.ch = ch;
         }
 
         public void Start()
         {
             //this.m_logging.Log("before communicationConfig", MessageTypeEnum.INFO);
-            //string[] communicationConfig = System.IO.File.ReadAllLines("communicationConfig");
+            
+            //string[] communicationConfig = System.IO.File.ReadAllLines(@"C:\Users\hana\source\repos\ImageService\ImageService\communicationConfig.txt");
+
             //this.m_logging.Log("after communicationConfig", MessageTypeEnum.INFO);
 
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), this.port);
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7500);
             //IPEndPoint ep = new IPEndPoint(IPAddress.Parse(communicationConfig[0]), int.Parse(communicationConfig[1]));
             listener = new TcpListener(ep);
             listener.Start();
