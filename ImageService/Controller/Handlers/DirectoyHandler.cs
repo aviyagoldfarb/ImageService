@@ -58,7 +58,7 @@ namespace ImageService.Controller.Handlers
         /// <param name="e">FileSystemEventArgs</param>
         private void OnFileMoved(object source, FileSystemEventArgs e)
         {
-            this.m_logging.Log("On OnFileMoved", MessageTypeEnum.INFO);
+            this.m_logging.Log("In OnFileMoved", MessageTypeEnum.INFO);
             string[] args = new string[1];
             args[0] = e.FullPath;
             // Check if the new file belongs to the type of files we need to handle
@@ -79,7 +79,7 @@ namespace ImageService.Controller.Handlers
         /// <param name="e">CommandRecievedEventArgs</param>
         public void OnCommandRecieved(object sender, CommandRecievedEventArgs e)
         {
-            this.m_logging.Log("OnCommandRecieved", MessageTypeEnum.INFO);
+            this.m_logging.Log("In OnCommandRecieved", MessageTypeEnum.INFO);
             // Check the CommandID
             if (e.CommandID == (int)CommandEnum.NewFileCommand)
             {

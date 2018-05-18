@@ -78,7 +78,7 @@ namespace ImageService
         public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
         {
             // TODO: Insert monitoring activities here.  
-            eventLog1.WriteEntry("Monitoring the System.", EventLogEntryType.Information, eventId++);
+            //eventLog1.WriteEntry("Monitoring the System.", EventLogEntryType.Information, eventId++);
         }
 
         protected override void OnStart(string[] args)
@@ -88,7 +88,7 @@ namespace ImageService
             serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-            eventLog1.WriteEntry("In OnStart.", EventLogEntryType.Information);
+            eventLog1.WriteEntry("In OnStart.", EventLogEntryType.Information, eventId++);
             // Set up a timer to trigger every minute.  
             System.Timers.Timer timer = new System.Timers.Timer();
             timer.Interval = 60000; // 60 seconds  
@@ -103,7 +103,7 @@ namespace ImageService
             int thumbnailSize = Int32.Parse(ConfigurationManager.AppSettings["ThumbnailSize"]);
             // Create an imageModal and a controller 
             IImageServiceModal imageModal = new ImageServiceModal(outputFolder, thumbnailSize);
-            IImageController controller = new ImageController(imageModal, eventLog1);
+            IImageController controller = new ImageController(imageModal);
             // Create a logging model
             LoggingService logger = new LoggingService();
             // OnMsg subscribes to MessageRecieved EventHandler
@@ -122,19 +122,14 @@ namespace ImageService
             serviceStatus.dwCurrentState = ServiceState.SERVICE_STOP_PENDING;
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-            eventLog1.WriteEntry("In onStop.", EventLogEntryType.Information);
+            eventLog1.WriteEntry("In onStop.", EventLogEntryType.Information, eventId++);
             // Update the service state to Stopped.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_STOPPED;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
             // The server ends the handlers operation 
             server.SendCommand();
         }
-
-        protected override void OnContinue()
-        {
-            eventLog1.WriteEntry("In OnContinue.", EventLogEntryType.Information);
-        }
-
+        
         /// <summary>
         /// Invokes by the MessageRecieved EventHandler
         /// </summary>
@@ -142,19 +137,19 @@ namespace ImageService
         /// <param name="type">MessageRecievedEventArgs</param>
         private void OnMsg(object sender, MessageRecievedEventArgs type)
         {
-            if (type.Status == MessageTypeEnum.INFO)
+            switch (type.Status)
             {
-                eventLog1.WriteEntry(type.Message, EventLogEntryType.Information);
+                case MessageTypeEnum.INFO:
+                    eventLog1.WriteEntry(type.Message, EventLogEntryType.Information, eventId++);
+                    break;
+                case MessageTypeEnum.WARNING:
+                    eventLog1.WriteEntry(type.Message, EventLogEntryType.Warning, eventId++);
+                    break;
+                case MessageTypeEnum.FAIL:
+                    eventLog1.WriteEntry(type.Message, EventLogEntryType.FailureAudit, eventId++);
+                    break;
             }
-            else if (type.Status == MessageTypeEnum.WARNING)
-            {
-                eventLog1.WriteEntry(type.Message, EventLogEntryType.Warning);
-            }
-            else if (type.Status == MessageTypeEnum.FAIL)
-            {
-                eventLog1.WriteEntry(type.Message, EventLogEntryType.FailureAudit);
-            }
-
         }
+
     }
 }
