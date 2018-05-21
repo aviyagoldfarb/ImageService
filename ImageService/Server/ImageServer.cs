@@ -24,7 +24,7 @@ namespace ImageService.Server
         private List<IDirectoryHandler> listOfHandlers;
         private TcpListener listener;
         private IClientHandler ch;
-        private TcpClient client;
+        private List<TcpClient> clients;
         #endregion
 
         #region Properties
@@ -35,6 +35,7 @@ namespace ImageService.Server
 
         public ImageServer(IImageController controller, ILoggingService logging, IClientHandler ch)
         {
+            this.clients = new List<TcpClient>(); 
             this.m_controller = controller;
             this.m_logging = logging;
             this.listOfHandlers = new List<IDirectoryHandler>();
@@ -59,9 +60,10 @@ namespace ImageService.Server
                 {
                     try
                     {
-                        this.client = listener.AcceptTcpClient();
+                        TcpClient client = listener.AcceptTcpClient();
+                        this.clients.Add(client);
                         // Got a new connection
-                        ch.HandleClient(client, this);
+                        ch.HandleClient(this.clients, client, this);
                     }
                     catch (SocketException)
                     {
@@ -87,7 +89,7 @@ namespace ImageService.Server
             string[] listOfPaths = paths.Split(';');
             foreach (string path in listOfPaths)
             {
-                IDirectoryHandler handler = new DirectoyHandler(path, this.m_controller, this.m_logging, this.client);
+                IDirectoryHandler handler = new DirectoyHandler(path, this.m_controller, this.m_logging);
                 // handler.OnCommandRecieved subscribes to CommandRecieved EventHandler
                 CommandRecieved += handler.OnCommandRecieved;
                 // OnCloseServer subscribes to DirectoryClose EventHandler
@@ -140,6 +142,11 @@ namespace ImageService.Server
 
         public IImageController GetController() {
             return this.m_controller;
+        }
+
+        public void LogMessage(string message)
+        {
+            this.ch.LogClients(this.clients, message);
         }
     }
 }

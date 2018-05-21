@@ -10,6 +10,7 @@ namespace ImageService.Controller.Handlers
 {
     public interface IClientHandler
     {
-        void HandleClient(TcpClient client, ImageServer server);
+        void HandleClient(List<TcpClient> clients, TcpClient client, ImageServer server);
+        void LogClients(List<TcpClient> clients, string message);
     }
 }

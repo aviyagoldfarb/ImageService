@@ -137,18 +137,25 @@ namespace ImageService
         /// <param name="type">MessageRecievedEventArgs</param>
         private void OnMsg(object sender, MessageRecievedEventArgs type)
         {
+            string message = "else";
             switch (type.Status)
             {
                 case MessageTypeEnum.INFO:
                     eventLog1.WriteEntry(type.Message, EventLogEntryType.Information, eventId++);
+                    message = "Information" + "$" + type.Message + "\n";
                     break;
                 case MessageTypeEnum.WARNING:
                     eventLog1.WriteEntry(type.Message, EventLogEntryType.Warning, eventId++);
+                    message = "WARNING" + "$" + type.Message + "\n";
                     break;
                 case MessageTypeEnum.FAIL:
                     eventLog1.WriteEntry(type.Message, EventLogEntryType.FailureAudit, eventId++);
+                    message = "FAIL" + "$" + type.Message + "\n";
                     break;
             }
+            this.server.LogMessage(message);
+            
+
         }
 
     }
