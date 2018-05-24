@@ -13,6 +13,12 @@ namespace ImageService.Controller.Handlers
 {
     class ClientHandler : IClientHandler
     {
+        
+        /// <summary>
+    /// the function handeling the connections with the clients.
+    /// </summary>
+    /// <param name="client">the client that need to be handle</param>
+    /// <param name="server">the server of the service</param>
         public void HandleClient(TcpClient client, ImageServer server)
         {
             List<TcpClient> clients = server.GetClients();
@@ -51,7 +57,11 @@ namespace ImageService.Controller.Handlers
                 client.Close();
             }).Start();
         }
-
+        /// <summary>
+        /// removing a client from the list of clients that connection.
+        /// </summary>
+        /// <param name="clients">the list of the clients</param>
+        /// <param name="client">the client that need to remove</param>
         private void RemoveClient(List<TcpClient> clients, TcpClient client)
         {
             clients.Remove(client);
@@ -59,10 +69,10 @@ namespace ImageService.Controller.Handlers
         }
 
         /// <summary>
-        /// 
+        /// handeling the command of removing a handler
         /// </summary>
-        /// <param name="server"></param>
-        /// <param name="commandAndArg"></param>
+        /// <param name="server">the server of the service</param>
+        /// <param name="commandAndArg">the command and the path of the handler that need to be remove </param>
         private void RemoveHandler(ImageServer server, string[] commandAndArg)
         {
             List<TcpClient> clients = server.GetClients();
@@ -84,7 +94,13 @@ namespace ImageService.Controller.Handlers
                 }
             }
         }
-
+        /// <summary>
+        /// executing a command and back an answer
+        /// </summary>
+        /// <param name="server">the server of the service</param>
+        /// <param name="commandAndArg">the command and the args of this command</param>
+        /// <param name="writer">the writer to the client</param>
+        /// <param name="client">the client that need to remove if the connection is failed</param>
         private void ExecuteCommand(ImageServer server, string[] commandAndArg, BinaryWriter writer, TcpClient client)
         {
             List<TcpClient> clients = server.GetClients();
@@ -102,7 +118,11 @@ namespace ImageService.Controller.Handlers
                 this.RemoveClient(clients, client);
             }
         }
-
+        /// <summary>
+        /// logging a massage to all the clients
+        /// </summary>
+        /// <param name="clients">the list of all the clients</param>
+        /// <param name="message">the massage</param>
         public void LogClients(List<TcpClient> clients, string message)
         {
             new Task(() =>

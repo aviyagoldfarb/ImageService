@@ -11,6 +11,12 @@ namespace ImageService.Commands
     public interface ICommand
     {
         // The function that will execute the commands
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args">the arguments for the executed</param>
+        /// <param name="result">the result of the execute (true/false)</param>
+        /// <returns></returns>
         string Execute(string[] args, out bool result);
     }
 }

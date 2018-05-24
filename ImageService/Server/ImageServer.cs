@@ -62,7 +62,9 @@ namespace ImageService.Server
             }
             this.Start();
         }
-        
+        /// <summary>
+        /// starting the connection with the clients
+        /// </summary>
         public void Start()
         {
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8000);
@@ -116,12 +118,17 @@ namespace ImageService.Server
             // Remove this handler from the listOfHandlers
             this.listOfHandlers.Remove(handler);
         }
-        
+        /// <summary>
+        /// logging a message to all the clients
+        /// </summary>
+        /// <param name="message">the message that need to be log</param>
         public void LogMessage(string message)
         {
             this.ch.LogClients(this.clients, message);
         }
-
+        /// <summary>
+        /// stopping to listen 
+        /// </summary>
         public void StopListen()
         {
             listener.Stop();
@@ -141,7 +148,11 @@ namespace ImageService.Server
             return ("failure");
         }
         */
-
+        /// <summary>
+        /// removing a handler from the list of the handlers
+        /// </summary>
+        /// <param name="path">the path of the directory that need to stop handling</param>
+        /// <returns>the result of action (success or failure)</returns>
         public string RemoveHandler(string path)
         {
             bool sucsses = false;
@@ -169,12 +180,18 @@ namespace ImageService.Server
                 return ("sucsses");
             return ("failure");
         }
-
+        /// <summary>
+        /// getting the controller
+        /// </summary>
+        /// <returns>the controller</returns>
         public IImageController GetController()
         {
             return this.m_controller;
         }
-
+        /// <summary>
+        /// getting the list of the clients
+        /// </summary>
+        /// <returns>the list of the client</returns>
         public List<TcpClient> GetClients()
         {
             return this.clients;
