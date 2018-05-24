@@ -16,8 +16,6 @@ namespace ImageService.Controller.Handlers
         public void HandleClient(TcpClient client, ImageServer server)
         {
             List<TcpClient> clients = server.GetClients();
-            //bool resultSuccesful;
-            //string result;
             bool stop = false;
 
             new Task(() =>
@@ -26,24 +24,7 @@ namespace ImageService.Controller.Handlers
                     NetworkStream stream = client.GetStream();
                     BinaryReader reader = new BinaryReader(stream);
                     BinaryWriter writer = new BinaryWriter(stream);
-
-                    /*
-                    string command = reader.ReadString();
-                    string[] commandAndArg = command.Split(' ');
-
-                    switch (commandAndArg[0])
-                    {
-                        case "RemoveHandler":
-                            this.RemoveHandler(server, commandAndArg);
-                            break;
-                        case "Close":
-                            this.RemoveClient(clients, client);
-                            break;
-                        default:
-                            this.ExecuteCommand(server, commandAndArg, writer, client);
-                            break;
-                    }
-                    */
+                    
                     try
                     {
                         string command = reader.ReadString();

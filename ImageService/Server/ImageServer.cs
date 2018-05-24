@@ -62,7 +62,7 @@ namespace ImageService.Server
             }
             this.Start();
         }
-
+        
         public void Start()
         {
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8000);
@@ -116,7 +116,7 @@ namespace ImageService.Server
             // Remove this handler from the listOfHandlers
             this.listOfHandlers.Remove(handler);
         }
-
+        
         public void LogMessage(string message)
         {
             this.ch.LogClients(this.clients, message);
@@ -134,9 +134,7 @@ namespace ImageService.Server
             {
                 if (handler.GetPath() == path)
                 {
-
                     handler.CloseHandler(path);
-
                     return ("sucsses");
                 }
             }

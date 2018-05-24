@@ -154,8 +154,6 @@ namespace ImageService
                     break;
             }
             this.server.LogMessage(message);
-            
-
         }
 
     }

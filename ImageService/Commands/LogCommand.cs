@@ -37,8 +37,6 @@ namespace ImageService.Commands
             for (int i = (entries.Count - 1); i > 0; i--)
             {
                 entry = entries[i];
-
-                //entireLog += (entry.EntryType + "$" + entry.Message + "\n");
                 entireLogList.Add((entry.EntryType + "$" + entry.Message + "\n"));
                 if (entry.InstanceId.ToString() == "1")
                 {

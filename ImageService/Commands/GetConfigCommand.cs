@@ -13,16 +13,14 @@ namespace ImageService.Commands
     public class GetConfigCommand : ICommand
     {
 
-        /// Calls GetConfig function of ImageServiceModal class
+        /// <summary>
+        /// 
         /// </summary>
-        /// <param name="args">The  </param>
-        /// <param name="result">Result of GetConfig function</param>
-        /// <returns>Message for the log</returns>
+        /// <param name="args"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public string Execute(string[] args, out bool result)
         {
-            // Returns the configurations sending = true, and the error message if result = false
-            //return m_modal.GetConfig(out result);
-
             result = false;
             string path1 = "Handler$" + ConfigurationManager.AppSettings["Handler"];
             string path2 = "OutputDir$" + ConfigurationManager.AppSettings["OutputDir"];
