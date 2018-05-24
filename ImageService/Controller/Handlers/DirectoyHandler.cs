@@ -48,7 +48,7 @@ namespace ImageService.Controller.Handlers
             // When a file or directory in the specified path is created, invoke OnFileMoved function
             this.m_dirWatcher.Created += new FileSystemEventHandler(OnFileMoved);
             this.m_dirWatcher.EnableRaisingEvents = true;
-            this.m_logging.Log("Watcher is watching", MessageTypeEnum.INFO);
+            this.m_logging.Log("The directory is being watched", MessageTypeEnum.INFO);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace ImageService.Controller.Handlers
         /// <param name="e">FileSystemEventArgs</param>
         private void OnFileMoved(object source, FileSystemEventArgs e)
         {
-            this.m_logging.Log("In OnFileMoved", MessageTypeEnum.INFO);
+            this.m_logging.Log("A new file moved into the directory", MessageTypeEnum.INFO);
             string[] args = new string[1];
             args[0] = e.FullPath;
             // Check if the new file belongs to the type of files we need to handle
@@ -79,7 +79,7 @@ namespace ImageService.Controller.Handlers
         /// <param name="e">CommandRecievedEventArgs</param>
         public void OnCommandRecieved(object sender, CommandRecievedEventArgs e)
         {
-            this.m_logging.Log("In OnCommandRecieved", MessageTypeEnum.INFO);
+            this.m_logging.Log("Command recieved", MessageTypeEnum.INFO);
             // Check the CommandID
             if (e.CommandID == (int)CommandEnum.NewFileCommand)
             {
@@ -97,7 +97,7 @@ namespace ImageService.Controller.Handlers
             }
             else if (e.CommandID == (int)CommandEnum.CloseCommand)
             {
-                this.m_logging.Log("Closing Handler", MessageTypeEnum.INFO);
+                this.m_logging.Log("Closing handler", MessageTypeEnum.INFO);
                 this.CloseHandler(e.Args[0]);
             }
         }
@@ -109,12 +109,12 @@ namespace ImageService.Controller.Handlers
         public void CloseHandler(string path)
         {
             this.m_dirWatcher.EnableRaisingEvents = false;
-            DirectoryClose?.Invoke(this, new DirectoryCloseEventArgs(path, " Close Handler"));
+            DirectoryClose?.Invoke(this, new DirectoryCloseEventArgs(path, "Closing handler"));
         }
 
-        public string getPath()
+        public string GetPath()
         {
-            return (this.m_path);
+            return this.m_path;
         } 
     }
 }

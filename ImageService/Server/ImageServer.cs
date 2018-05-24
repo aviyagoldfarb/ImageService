@@ -41,44 +41,6 @@ namespace ImageService.Server
             this.listOfHandlers = new List<IDirectoryHandler>();
             this.ch = ch;
         }
-
-        public void Start()
-        {
-            //this.m_logging.Log("before communicationConfig", MessageTypeEnum.INFO);
-            
-            //string[] communicationConfig = System.IO.File.ReadAllLines(@"C:\Users\hana\source\repos\ImageService\ImageService\communicationConfig.txt");
-
-            //this.m_logging.Log("after communicationConfig", MessageTypeEnum.INFO);
-
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7500);
-            //IPEndPoint ep = new IPEndPoint(IPAddress.Parse(communicationConfig[0]), int.Parse(communicationConfig[1]));
-            listener = new TcpListener(ep);
-            listener.Start();
-            // Waiting for connections, each connection in a new thread
-            Task task = new Task(() => {
-                while (true)
-                {
-                    try
-                    {
-                        TcpClient client = listener.AcceptTcpClient();
-                        this.clients.Add(client);
-                        // Got a new connection
-                        ch.HandleClient(this.clients, client, this);
-                    }
-                    catch (SocketException)
-                    {
-                        break;
-                    }
-                }
-                // Server stopped
-            });
-            task.Start();
-        }
-
-        public void StopListen()
-        {
-            listener.Stop();
-        }
         
         /// <summary>
         /// Creates handler for each specified path in the App.config 
@@ -101,17 +63,32 @@ namespace ImageService.Server
             this.Start();
         }
 
-        public string RemoveHandler(string path)
+        public void Start()
         {
-            foreach (IDirectoryHandler handler in this.listOfHandlers)
-            {
-                 if (handler.getPath() == path)
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8000);
+            //string[] communicationConfig = System.IO.File.ReadAllLines(@"C:\Users\hana\source\repos\ImageService\ImageService\communicationConfig.txt");
+            //IPEndPoint ep = new IPEndPoint(IPAddress.Parse(communicationConfig[0]), int.Parse(communicationConfig[1]));
+            listener = new TcpListener(ep);
+            listener.Start();
+            // Waiting for connections, each connection in a new thread
+            Task task = new Task(() => {
+                while (true)
                 {
-                    CommandRecieved -= handler.OnCommandRecieved;
-                    return ("sucsses");
+                    try
+                    {
+                        TcpClient client = listener.AcceptTcpClient();
+                        // Got a new connection
+                        this.clients.Add(client);
+                        ch.HandleClient(client, this);
+                    }
+                    catch (Exception)
+                    {
+                        break;
+                    }
                 }
-             }
-            return ("failed");
+                // Server stopped
+            });
+            task.Start();
         }
 
         /// <summary>
@@ -140,13 +117,69 @@ namespace ImageService.Server
             this.listOfHandlers.Remove(handler);
         }
 
-        public IImageController GetController() {
-            return this.m_controller;
-        }
-
         public void LogMessage(string message)
         {
             this.ch.LogClients(this.clients, message);
+        }
+
+        public void StopListen()
+        {
+            listener.Stop();
+        }
+
+        /*
+        public string RemoveHandler(string path)
+        {
+            foreach (IDirectoryHandler handler in this.listOfHandlers)
+            {
+                if (handler.GetPath() == path)
+                {
+
+                    handler.CloseHandler(path);
+
+                    return ("sucsses");
+                }
+            }
+            return ("failure");
+        }
+        */
+
+        public string RemoveHandler(string path)
+        {
+            bool sucsses = false;
+            string newHandlersList = "";
+            IDirectoryHandler chosenHandler = null;
+
+            foreach (IDirectoryHandler handler in this.listOfHandlers)
+            {
+                if (handler.GetPath() == path)
+                {
+                    chosenHandler = handler;                    
+                    sucsses = true;
+                }
+                else
+                {
+                    newHandlersList += (handler.GetPath() + ";");
+                }
+            }
+            if (chosenHandler != null)
+            {
+                chosenHandler.CloseHandler(path);
+                ConfigurationManager.AppSettings.Set("Handler", newHandlersList);
+            }            
+            if (sucsses)
+                return ("sucsses");
+            return ("failure");
+        }
+
+        public IImageController GetController()
+        {
+            return this.m_controller;
+        }
+
+        public List<TcpClient> GetClients()
+        {
+            return this.clients;
         }
     }
 }

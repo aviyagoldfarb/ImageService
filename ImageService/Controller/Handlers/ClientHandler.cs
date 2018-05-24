@@ -13,10 +13,11 @@ namespace ImageService.Controller.Handlers
 {
     class ClientHandler : IClientHandler
     {
-        public void HandleClient(List<TcpClient> clients, TcpClient client, ImageServer server)
+        public void HandleClient(TcpClient client, ImageServer server)
         {
-            bool resultSuccesful;
-            string result;
+            List<TcpClient> clients = server.GetClients();
+            //bool resultSuccesful;
+            //string result;
             bool stop = false;
 
             new Task(() =>
@@ -26,75 +27,119 @@ namespace ImageService.Controller.Handlers
                     BinaryReader reader = new BinaryReader(stream);
                     BinaryWriter writer = new BinaryWriter(stream);
 
-                    //string entireCommand = reader.ReadLine();
+                    /*
                     string command = reader.ReadString();
                     string[] commandAndArg = command.Split(' ');
 
-                    // here supose to be the code that getting the data in the format that we using.
-
-                    if (commandAndArg[0] == "RemoveHandler")
+                    switch (commandAndArg[0])
                     {
-
-                        result = server.RemoveHandler(commandAndArg[1]);
-                        if (result == "sucsses")
-                        {
-                            foreach (TcpClient c in clients)
-                            {
-                                NetworkStream tempStream = c.GetStream();
-                                BinaryWriter tempWriter = new BinaryWriter(tempStream);
-                                try
-                                {
-                                    tempWriter.Write("RemoveHandler" + ' ' + commandAndArg[1]);
-                                } catch (Exception)
-                                {
-                                    this.RemoveClient(clients, c);
-                                }
-                            }
-                        }
-                    } else if (commandAndArg[0] == "close")
-                    {
-                        this.RemoveClient(clients, client);
-                    } else
-                    {
-                        string[] args = new string[1];
-                        // args[0] = commandAndArg[1];
-                        args[0] = " ";
-                        result = server.GetController().ExecuteCommand(Convert.ToInt32((Enum.Parse(typeof(CommandEnum), commandAndArg[0]))), args, out resultSuccesful);
-                        try
-                        {
-                            writer.Write(result);
-                        } catch (Exception)
-                        {
+                        case "RemoveHandler":
+                            this.RemoveHandler(server, commandAndArg);
+                            break;
+                        case "Close":
                             this.RemoveClient(clients, client);
+                            break;
+                        default:
+                            this.ExecuteCommand(server, commandAndArg, writer, client);
+                            break;
+                    }
+                    */
+                    try
+                    {
+                        string command = reader.ReadString();
+                        string[] commandAndArg = command.Split(' ');
+
+                        switch (commandAndArg[0])
+                        {
+                            case "RemoveHandler":
+                                this.RemoveHandler(server, commandAndArg);
+                                break;
+                            case "Close":
+                                this.RemoveClient(clients, client);
+                                break;
+                            default:
+                                this.ExecuteCommand(server, commandAndArg, writer, client);
+                                break;
                         }
                     }
-                   // writer.Write(result);
+                    catch (Exception)
+                    {
+                        break;
+                    }
                 } while (!stop);
                 client.Close();
             }).Start();
-        } 
+        }
 
-        public void RemoveClient(List<TcpClient> clients,TcpClient client)
+        private void RemoveClient(List<TcpClient> clients, TcpClient client)
         {
-            client.Close();
             clients.Remove(client);
+            client.Close();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="server"></param>
+        /// <param name="commandAndArg"></param>
+        private void RemoveHandler(ImageServer server, string[] commandAndArg)
+        {
+            List<TcpClient> clients = server.GetClients();
+            string result = server.RemoveHandler(commandAndArg[1]);
+            if (result == "sucsses")
+            {
+                foreach (TcpClient c in clients)
+                {
+                    NetworkStream tempStream = c.GetStream();
+                    BinaryWriter tempWriter = new BinaryWriter(tempStream);
+                    try
+                    {
+                        tempWriter.Write("RemovedHandler" + '#' + commandAndArg[1]);
+                    }
+                    catch (Exception)
+                    {
+                        this.RemoveClient(clients, c);
+                    }
+                }
+            }
+        }
+
+        private void ExecuteCommand(ImageServer server, string[] commandAndArg, BinaryWriter writer, TcpClient client)
+        {
+            List<TcpClient> clients = server.GetClients();
+            bool resultSuccesful;
+            string result;
+            string[] args = new string[1];
+            args[0] = " ";
+            result = server.GetController().ExecuteCommand(Convert.ToInt32((Enum.Parse(typeof(CommandEnum), commandAndArg[0]))), args, out resultSuccesful);
+            try
+            {
+                writer.Write(result);
+            }
+            catch (Exception)
+            {
+                this.RemoveClient(clients, client);
+            }
         }
 
         public void LogClients(List<TcpClient> clients, string message)
         {
-            foreach(TcpClient c in clients)
+            new Task(() =>
             {
-                NetworkStream tempStream = c.GetStream();
-                BinaryWriter tempWriter = new BinaryWriter(tempStream);
-                try
+                foreach (TcpClient c in clients)
                 {
-                    tempWriter.Write("Log" + ' ' + message);
+                    NetworkStream tempStream = c.GetStream();
+                    BinaryWriter tempWriter = new BinaryWriter(tempStream);
+                    try
+                    {
+                        tempWriter.Write("LogUpdated" + '#' + message);
+                    }
+                    catch (Exception)
+                    {
+                        this.RemoveClient(clients, c);
+                    }
                 }
-                catch (Exception)
-                {
-                    this.RemoveClient(clients, c);
-                }
-            }
+            }).Start();
         }
     }
 }

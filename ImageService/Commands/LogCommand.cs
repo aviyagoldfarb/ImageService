@@ -1,5 +1,6 @@
 ﻿using ImageService.Commands;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
@@ -27,31 +28,27 @@ namespace ImageService.Commands
         /// <returns>Message for the log</returns>
         public string Execute(string[] args, out bool result)
         {
-            /*
             result = false;
-            string entireLog = "";
-            foreach (EventLogEntry entry in this.eventLog.Entries)
-            {
-                entireLog += (entry.EntryType + "$" + entry.Message + "\n");
-            }
-            result = true;
-            return entireLog;
-            */
-            
-            result = false;
-            string entireLog = "";
+            string entireLog = "LogUpdated#";
             EventLogEntry entry;
             EventLogEntryCollection entries = this.eventLog.Entries;
+            List<string> entireLogList = new List<string>();
+
             for (int i = (entries.Count - 1); i > 0; i--)
             {
                 entry = entries[i];
-                entireLog += (entry.EntryType + "$" + entry.Message + "\n");
+
+                //entireLog += (entry.EntryType + "$" + entry.Message + "\n");
+                entireLogList.Add((entry.EntryType + "$" + entry.Message + "\n"));
                 if (entry.InstanceId.ToString() == "1")
                 {
                     break;
                 }
             }
+
             result = true;
+            entireLogList.Reverse();
+            entireLog += string.Join("", entireLogList.ToArray());
             return entireLog;
         }
     }

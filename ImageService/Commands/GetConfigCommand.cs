@@ -24,14 +24,14 @@ namespace ImageService.Commands
             //return m_modal.GetConfig(out result);
 
             result = false;
-            string paths1 = "Handler$" + ConfigurationManager.AppSettings["Handler"];
-            string paths2 = "OutputDir$" + ConfigurationManager.AppSettings["OutputDir"];
-            string paths3 = "SourceName$" + ConfigurationManager.AppSettings["SourceName"];
-            string paths4 = "LogName$" + ConfigurationManager.AppSettings["LogName"];
-            string paths5 = "ThumbnailSize$" + ConfigurationManager.AppSettings["ThumbnailSize"];
+            string path1 = "Handler$" + ConfigurationManager.AppSettings["Handler"];
+            string path2 = "OutputDir$" + ConfigurationManager.AppSettings["OutputDir"];
+            string path3 = "SourceName$" + ConfigurationManager.AppSettings["SourceName"];
+            string path4 = "LogName$" + ConfigurationManager.AppSettings["LogName"];
+            string path5 = "ThumbnailSize$" + ConfigurationManager.AppSettings["ThumbnailSize"];
 
             result = true;
-            return (paths1 + ' ' + paths2 + ' ' + paths3 + ' ' + paths4 + ' ' + paths5);
+            return ("ConfigRecieved#" + path1 + '\n' + path2 + '\n' + path3 + '\n' + path4 + '\n' + path5);
         }
     }
 }
