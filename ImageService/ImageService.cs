@@ -88,7 +88,7 @@ namespace ImageService
             serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-            eventLog1.WriteEntry("In OnStart.", EventLogEntryType.Information, eventId++);
+            eventLog1.WriteEntry("In OnStart", EventLogEntryType.Information, eventId++);
             // Set up a timer to trigger every minute.  
             System.Timers.Timer timer = new System.Timers.Timer();
             timer.Interval = 60000; // 60 seconds  

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ImageService.Server
@@ -175,6 +176,8 @@ namespace ImageService.Server
             {
                 chosenHandler.CloseHandler(path);
                 ConfigurationManager.AppSettings.Set("Handler", newHandlersList);
+                this.m_logging.Log("The handler of " + path + " removed", MessageTypeEnum.INFO);
+                Thread.Sleep(100);
             }            
             if (sucsses)
                 return ("sucsses");
