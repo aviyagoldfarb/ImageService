@@ -15,6 +15,9 @@ using ImageService.Controller;
 using ImageService.Modal;
 using System.Configuration;
 using ImageService.Controller.Handlers;
+using Newtonsoft.Json.Linq;
+using ImageService.Infrastructure.Enums;
+using Newtonsoft.Json;
 
 namespace ImageService
 {
@@ -137,23 +140,44 @@ namespace ImageService
         /// <param name="type">MessageRecievedEventArgs</param>
         private void OnMsg(object sender, MessageRecievedEventArgs type)
         {
-            string message = "";
+
+            Dictionary<int, string[]> logsMap = new Dictionary<int, string[]>();
+            string[] typeAndMessage = new string[2];
+            
+            //string message = "";
             switch (type.Status)
             {
                 case MessageTypeEnum.INFO:
                     eventLog1.WriteEntry(type.Message, EventLogEntryType.Information, eventId++);
-                    message += "Information" + "$" + type.Message + "\n";
+                    //message += "Information" + "$" + type.Message + "\n";
+                    typeAndMessage[0] = "Information";
+                    typeAndMessage[1] = type.Message;
+                    logsMap.Add(eventId-1, typeAndMessage);
                     break;
                 case MessageTypeEnum.WARNING:
                     eventLog1.WriteEntry(type.Message, EventLogEntryType.Warning, eventId++);
-                    message += "Warning" + "$" + type.Message + "\n";
+                    //message += "Warning" + "$" + type.Message + "\n";
+                    typeAndMessage[0] = "Warning";
+                    typeAndMessage[1] = type.Message;
+                    logsMap.Add(eventId - 1, typeAndMessage);
                     break;
                 case MessageTypeEnum.FAIL:
                     eventLog1.WriteEntry(type.Message, EventLogEntryType.FailureAudit, eventId++);
-                    message += "FailureAudit" + "$" + type.Message + "\n";
+                    //message += "FailureAudit" + "$" + type.Message + "\n";
+                    typeAndMessage[0] = "FailureAudit";
+                    typeAndMessage[1] = type.Message;
+                    logsMap.Add(eventId - 1, typeAndMessage);
                     break;
             }
-            this.server.LogMessage(message);
+            //In order to keep updating the clients with the new logs  
+            //this.server.LogMessage(message);
+            JObject logObj = new JObject
+            {
+                ["CommandEnum"] = (int)CommandEnum.LogCommand,
+                ["LogMap"] = JsonConvert.SerializeObject(logsMap)
+            };
+            //In order to keep updating the clients with the new logs  
+            this.server.LogMessage(logObj.ToString());
         }
 
     }

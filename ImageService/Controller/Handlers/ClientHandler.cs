@@ -1,12 +1,14 @@
 ﻿using ImageService.Controller;
 using ImageService.Infrastructure.Enums;
 using ImageService.Server;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ImageService.Controller.Handlers
@@ -77,6 +79,7 @@ namespace ImageService.Controller.Handlers
         {
             List<TcpClient> clients = server.GetClients();
             string result = server.RemoveHandler(commandAndArg[1]);
+
             if (result == "sucsses")
             {
                 foreach (TcpClient c in clients)
@@ -85,7 +88,13 @@ namespace ImageService.Controller.Handlers
                     BinaryWriter tempWriter = new BinaryWriter(tempStream);
                     try
                     {
-                        tempWriter.Write("RemovedHandler" + '#' + commandAndArg[1]);
+                        JObject configObj = new JObject
+                        {
+                            ["CommandEnum"] = (int)CommandEnum.CloseCommand,
+                            ["RemovedHandlerPath"] = commandAndArg[1]
+                        };
+                        tempWriter.Write(configObj.ToString());
+                        //tempWriter.Write("RemovedHandler" + '#' + commandAndArg[1]);
                     }
                     catch (Exception)
                     {
@@ -93,7 +102,9 @@ namespace ImageService.Controller.Handlers
                     }
                 }
             }
+
         }
+
         /// <summary>
         /// executing a command and back an answer
         /// </summary>
@@ -118,6 +129,7 @@ namespace ImageService.Controller.Handlers
                 this.RemoveClient(clients, client);
             }
         }
+        
         /// <summary>
         /// logging a massage to all the clients
         /// </summary>
@@ -133,7 +145,9 @@ namespace ImageService.Controller.Handlers
                     BinaryWriter tempWriter = new BinaryWriter(tempStream);
                     try
                     {
-                        tempWriter.Write("LogUpdated" + '#' + message);
+                        Thread.Sleep(100);
+                        tempWriter.Write(message);
+                        //tempWriter.Write("LogUpdated" + '#' + message);
                     }
                     catch (Exception)
                     {

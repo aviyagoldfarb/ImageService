@@ -135,20 +135,6 @@ namespace ImageService.Server
             listener.Stop();
         }
 
-        /*
-        public string RemoveHandler(string path)
-        {
-            foreach (IDirectoryHandler handler in this.listOfHandlers)
-            {
-                if (handler.GetPath() == path)
-                {
-                    handler.CloseHandler(path);
-                    return ("sucsses");
-                }
-            }
-            return ("failure");
-        }
-        */
         /// <summary>
         /// removing a handler from the list of the handlers
         /// </summary>
