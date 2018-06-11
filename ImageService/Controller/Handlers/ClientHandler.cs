@@ -145,7 +145,7 @@ namespace ImageService.Controller.Handlers
                     BinaryWriter tempWriter = new BinaryWriter(tempStream);
                     try
                     {
-                        Thread.Sleep(100);
+                        //Thread.Sleep(100);
                         tempWriter.Write(message);
                         //tempWriter.Write("LogUpdated" + '#' + message);
                     }
